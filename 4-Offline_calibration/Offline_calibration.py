@@ -3,18 +3,17 @@ import numpy as np
 import pandas as pd
 dir_path = os.path.dirname(os.path.realpath(__file__))
 files = {
-    "open_uncorrected" : "example",
-    "short_uncorrected" : "example",
-    "load_uncorrected" : "example",
-    "load_corrected" : "example",
-    "short_corrected" : "example",
-    "open_corrected" : "example",
-    "independent_load_uncorrected" : "example",
-    "independent_load_corrected" : "example",
+    "open_uncorrected" : "4_OFF_J2",
+    "short_uncorrected" : "4_OFF_J1",
+    "load_uncorrected" : "4_OFF_J3",
+    "load_corrected" : "4_ON_J3",
+    "short_corrected" : "4_ON_J1",
+    "open_corrected" : "4_ON_J2",
+    "independent_load_uncorrected" : "4_OFF_J4",
+    "independent_load_corrected" : "4_ON_J4",
 }
 files = {k: os.path.join(dir_path, rf"{v}.csv") for k, v in files.items()}
-data = lambda n: np.array(pd.read_csv(files[n], skipinitialspace=True)["trace"])
-
+data = lambda n: np.array(pd.read_csv(files[n], skipinitialspace=True, skiprows=6, skipfooter=2)['S11(DB)'])
 # To Perform the offline calibration (only one port) using the commands from Appendix A acquire the RAW 
 # (i.e., uncalibrated) data of the three standards and pass it to the script below with the following # convention:
 Gm1 = data("open_uncorrected") #(Open measurement data from your lab measurement to be imported in Matlab)
@@ -42,9 +41,9 @@ G1*G2*Gm2)
 
 et=ed*es-Delta
 # Gamma Correction Procedure.
-S11RAW = pd.read_csv(files["independent_load_uncorrected"], skipinitialspace=True)
-f = np.array(S11RAW["f"])
-S11RAW = np.array(S11RAW["trace"])
+S11RAW = pd.read_csv(files["independent_load_uncorrected"], skiprows=6, skipfooter=2, skipinitialspace=True)
+f = np.array(S11RAW["Freq(Hz)"])
+S11RAW = np.array(S11RAW["S11(DB)"])
 S11_corrected=(S11RAW-ed)/(S11RAW*es-Delta)
 # Note: When performing the computation for the error term make sure you are using all consistent
 # variable format (all raw or all column). When you need to transpose take care that you are dealing with
@@ -57,7 +56,7 @@ import scienceplots
 plt.style.use(['science','ieee'])
 
 fig, ax = plt.subplots()
-ax.plot(f, S11_ref, label="Reference data")
+# ax.plot(f, S11_ref, label="Reference data")
 ax.plot(f, S11_corrected, 'o', label="Offline corrected")
 
 ax.set_xlabel("Frequency [Hz]")
