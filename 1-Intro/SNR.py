@@ -37,8 +37,9 @@ for name in files.keys():
     f = fftshift(fftfreq(N, T))
 
     fig, ax = plt.subplots(1,2, figsize=(6,3))
-    std = np.std(np.abs(S22))
-    ax[0].plot(t*1e3, 20*np.log10(np.abs(S22)), label=rf"S22: $\sigma = {std*1e6:.0f}\mu$")
+    std = np.std(20*np.log10(np.abs(S22)))
+    # ax[0].plot(t*1e3, 20*np.log10(np.abs(S22)), label=rf"S22: $\sigma = {std*1e3:.1f}m$")
+    ax[0].plot(t*1e3, 20*np.log10(np.abs(S22)), label=rf"S22")
     ax[0].plot(t*1e3, 20*np.log10(np.abs(a22)), label="a2,2")
     ax[0].plot(t*1e3, 20*np.log10(np.abs(b12)), label="b1,2")
     
